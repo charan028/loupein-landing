@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LOUPEIN: let the record challenge the plan</title>
+<meta name="description" content="LOUPEIN is an autonomous pre-procedure record-review agent for dentists. It investigates the patient's own chart and surfaces only evidence-backed cards.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23115E59'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ======================================================
+     Canonical drawings, defined ONCE.
+     #record-wall is the single source for sections 2 and 3.
+     Stills for the device frame live here as symbols.
+     ====================================================== -->
+<svg class="defs" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="wall-light" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FCFBFA"/>
+      <stop offset="1" stop-color="#F0EEEB"/>
+    </linearGradient>
+    <filter id="frame-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="10" dy="14" stdDeviation="14" flood-color="#292524" flood-opacity="0.22"/>
+    </filter>
+
+    <!-- THE record wall: patient DEMO-007, 2019 to 2026 -->
+    <g id="record-wall">
+      <rect x="12" y="8" width="1032" height="412" rx="12" fill="url(#wall-light)" stroke="#E7E5E4"/>
+      <text class="wt-h" x="48" y="40">Chart, patient DEMO-007</text>
+
+      <!-- timeline axis -->
+      <line x1="48" y1="380" x2="1010" y2="380" stroke="#A8A29E" stroke-width="1.5"/>
+      <g stroke="#A8A29E" stroke-width="1.5">
+        <line x1="80"  y1="374" x2="80"  y2="386"/>
+        <line x1="208" y1="374" x2="208" y2="386"/>
+        <line x1="336" y1="374" x2="336" y2="386"/>
+        <line x1="464" y1="374" x2="464" y2="386"/>
+        <line x1="592" y1="374" x2="592" y2="386"/>
+        <line x1="720" y1="374" x2="720" y2="386"/>
+        <line x1="848" y1="374" x2="848" y2="386"/>
+        <line x1="976" y1="374" x2="976" y2="386"/>
+      </g>
+      <g class="wt-axis" text-anchor="middle">
+        <text x="80"  y="406">2019</text>
+        <text x="208" y="406">2020</text>
+        <text x="336" y="406">2021</text>
+        <text x="464" y="406">2022</text>
+        <text x="592" y="406">2023</text>
+        <text x="720" y="406">2024</text>
+        <text x="848" y="406">2025</text>
+        <text x="976" y="406">2026</text>
+      </g>
+
+      <!-- column connectors -->
+      <g stroke="#D6D3D1" stroke-width="1.5">
+        <line x1="336" y1="230" x2="336" y2="378"/>
+        <line x1="464" y1="200" x2="464" y2="378"/>
+        <line x1="592" y1="250" x2="592" y2="378"/>
+        <line x1="720" y1="220" x2="720" y2="378"/>
+        <line x1="848" y1="150" x2="848" y2="378"/>
+        <line x1="976" y1="320" x2="976" y2="378"/>
+      </g>
+
+      <!-- record cards (hard-offset shadows, light from upper-left) -->
+      <g id="c-cond7a">
+        <rect x="278" y="123" width="122" height="46" rx="6" fill="#CFC9C2"/>
+        <rect x="275" y="120" width="122" height="46" rx="6" fill="#FFFFFF" stroke="#D6D3D1"/>
+        <text class="wt-id" x="285" y="138">COND-007A</text>
+        <text class="wt-title" x="285" y="156">Atrial fibrillation</text>
+      </g>
+      <g id="c-cond7b">
+        <rect x="278" y="183" width="122" height="46" rx="6" fill="#CFC9C2"/>
+        <rect x="275" y="180" width="122" height="46" rx="6" fill="#FFFFFF" stroke="#D6D3D1"/>
+        <text class="wt-id" x="285" y="198">COND-007B</text>
+        <text class="wt-status" x="387" y="198" text-anchor="end">resolved</text>
+        <text class="wt-title" x="285" y="216">Knee replacement</text>
+      </g>
+      <g id="c-alg7">
+        <rect x="406" y="153" width="122" height="46" rx="6" fill="#CFC9C2"/>
+        <rect x="403" y="150" width="122" height="46" rx="6" fill="#FFFFFF" stroke="#D6D3D1"/>
+        <text class="wt-id" x="413" y="168">ALG-007</text>
+        <text class="wt-title" x="413" y="186">Penicillin allergy</text>
+      </g>
+      <g id="c-dent7a">
+        <rect x="534" y="203" width="122" height="46" rx="6" fill="#CFC9C2"/>
+        <rect x="531" y="200" width="122" height="46" rx="6" fill="#FFFFFF" stroke="#D6D3D1"/>
+        <text class="wt-id" x="541" y="218">DENT-007A</text>
+        <text class="wt-title" x="541" y="236">Root canal #30</text>
+      </g>
+      <g id="c-dent7b">
+        <rect x="662" y="113" width="122" height="46" rx="6" fill="#CFC9C2"/>
+        <rect x="659" y="110" width="122" height="46" rx="6" fill="#FFFFFF" stroke="#D6D3D1"/>
+        <text class="wt-id" x="669" y="128">DENT-007B</text>
+        <text class="wt-title" x="669" y="146">Crown #30</text>
+      </g>
+      <g id="c-med19">
+        <rect x="662" y="173" width="122" height="46" rx="6" fill="#CFC9C2"/>
+        <rect x="659" y="170" width="122" height="46" rx="6" fill="#FFFFFF" stroke="#D6D3D1"/>
+        <text class="wt-id" x="669" y="188">MED-019</text>
+        <text class="wt-status" x="771" y="188" text-anchor="end">active</text>
+        <text class="wt-title" x="669" y="206">Cetirizine</text>
+      </g>
+      <g id="c-note7">
+        <rect x="790" y="103" width="122" height="46" rx="6" fill="#CFC9C2"/>
+        <rect x="787" y="100" width="122" height="46" rx="6" fill="#FFFFFF" stroke="#D6D3D1"/>
+        <text class="wt-id" x="797" y="118">NOTE-007</text>
+        <text class="wt-title" x="797" y="136">Med change reported</text>
+      </g>
+      <g id="c-med18">
+        <rect x="918" y="93" width="122" height="46" rx="6" fill="#CFC9C2"/>
+        <rect x="915" y="90" width="122" height="46" rx="6" fill="#FFFFFF" stroke="#D6D3D1"/>
+        <text class="wt-id" x="925" y="108">MED-018</text>
+        <text class="wt-status" x="1027" y="108" text-anchor="end">active</text>
+        <text class="wt-title" x="925" y="126">Warfarin</text>
+      </g>
+      <g id="c-conv7">
+        <rect x="918" y="208" width="122" height="46" rx="6" fill="#CFC9C2"/>
+        <rect x="915" y="205" width="122" height="46" rx="6" fill="#FFFFFF" stroke="#D6D3D1"/>
+        <text class="wt-id" x="925" y="223">CONV-007</text>
+        <text class="wt-title" x="925" y="241">Visit transcript</text>
+      </g>
+      <g id="c-img1">
+        <rect x="918" y="273" width="122" height="46" rx="6" fill="#CFC9C2"/>
+        <rect x="915" y="270" width="122" height="46" rx="6" fill="#FFFFFF" stroke="#D6D3D1"/>
+        <text class="wt-id" x="925" y="288">IMG-001</text>
+        <text class="wt-title" x="925" y="306">Radiograph #30</text>
+      </g>
+    </g>
+
+    <!-- ============ device-frame stills ============ -->
+    <symbol id="still-poster" viewBox="0 0 276 616">
+      <rect width="276" height="616" fill="#FCFCFB"/>
+      <rect width="276" height="64" fill="#115E59"/>
+      <text class="st-brand" x="16" y="30">LOUPE<tspan fill="#99F6E4">IN</tspan></text>
+      <text class="st-bannersub" x="16" y="50">Case DEMO-007, extraction #30</text>
+      <circle cx="34" cy="100" r="14" fill="#D6D3D1"/>
+      <text class="st-name" x="58" y="97">Patient DEMO-007</text>
+      <text class="st-sub" x="58" y="113">Extraction, tooth #30</text>
+      <g>
+        <rect x="16" y="140" width="244" height="40" rx="8" fill="#FFFFFF" stroke="#E7E5E4"/>
+        <text class="st-row" x="30" y="164">Medications</text>
+        <text class="st-rowv" x="246" y="164" text-anchor="end">2 active</text>
+        <rect x="16" y="188" width="244" height="40" rx="8" fill="#FFFFFF" stroke="#E7E5E4"/>
+        <text class="st-row" x="30" y="212">Allergies</text>
+        <text class="st-rowv" x="246" y="212" text-anchor="end">1</text>
+        <rect x="16" y="236" width="244" height="40" rx="8" fill="#FFFFFF" stroke="#E7E5E4"/>
+        <text class="st-row" x="30" y="260">Conditions</text>
+        <text class="st-rowv" x="246" y="260" text-anchor="end">2</text>
+        <rect x="16" y="284" width="244" height="40" rx="8" fill="#FFFFFF" stroke="#E7E5E4"/>
+        <text class="st-row" x="30" y="308">Tooth #30 history</text>
+        <text class="st-rowv" x="246" y="308" text-anchor="end">2 events</text>
+      </g>
+      <rect x="16" y="540" width="244" height="48" rx="24" fill="#115E59"/>
+      <text class="st-btn" x="138" y="569" text-anchor="middle">Begin record review</text>
+    </symbol>
+
+    <symbol id="still-trace" viewBox="0 0 276 616">
+      <rect width="276" height="616" fill="#FCFCFB"/>
+      <rect width="276" height="64" fill="#115E59"/>
+      <text class="st-brand" x="16" y="30">LOUPE<tspan fill="#99F6E4">IN</tspan></text>
+      <text class="st-bannersub" x="16" y="50">Live trace</text>
+      <g class="st-trace">
+        <circle cx="24" cy="96" r="3" fill="#115E59"/><text x="38" y="100">guardian  patient summary</text>
+        <circle cx="24" cy="128" r="3" fill="#115E59"/><text x="38" y="132">guardian  active medications</text>
+        <circle cx="24" cy="160" r="3" fill="#115E59"/><text x="38" y="164">guardian  allergy records</text>
+        <circle cx="24" cy="192" r="3" fill="#115E59"/><text x="38" y="196">guardian  medical conditions</text>
+        <circle cx="24" cy="224" r="3" fill="#115E59"/><text x="38" y="228">guardian  tooth #30 history</text>
+        <circle cx="24" cy="256" r="3" fill="#115E59"/><text x="38" y="260">guardian  notes: 'medication'</text>
+        <circle cx="24" cy="288" r="3" fill="#115E59"/><text x="38" y="292">guardian  transcripts search</text>
+        <circle cx="24" cy="320" r="3" fill="#115E59"/><text x="38" y="324">guardian  imaging, tooth #30</text>
+        <circle cx="24" cy="352" r="3" fill="#92400E"/><text x="38" y="356">skeptic   challenging 3</text>
+        <circle cx="24" cy="384" r="3" fill="#92400E"/><text x="38" y="388">skeptic   Surface: Warfarin</text>
+        <circle cx="24" cy="416" r="3" fill="#92400E"/><text x="38" y="420">skeptic   Surface: AFib</text>
+        <circle cx="24" cy="448" r="3" fill="#1D4ED8"/><text x="38" y="452">skeptic   Verify: transcript</text>
+        <circle cx="24" cy="480" r="3" fill="#115E59"/><text x="38" y="484">composer  3 cards prepared</text>
+      </g>
+    </symbol>
+
+    <symbol id="still-cards" viewBox="0 0 276 616">
+      <rect width="276" height="616" fill="#FCFCFB"/>
+      <rect width="276" height="64" fill="#115E59"/>
+      <text class="st-brand" x="16" y="30">LOUPE<tspan fill="#99F6E4">IN</tspan></text>
+      <text class="st-bannersub" x="16" y="50">3 evidence-backed cards</text>
+      <g>
+        <rect x="16" y="88" width="244" height="120" rx="8" fill="#FFFFFF" stroke="#E7E5E4"/>
+        <rect x="16" y="88" width="5" height="120" rx="2" fill="#92400E"/>
+        <text class="st-cardh" x="34" y="114">Warfarin, active</text>
+        <text class="st-sub" x="34" y="136">Anticoagulant on the chart.</text>
+        <text class="st-sub" x="34" y="152">Bleeding risk for extraction.</text>
+        <text class="st-cardref" x="34" y="190">MED-018</text>
+        <rect x="16" y="222" width="244" height="120" rx="8" fill="#FFFFFF" stroke="#E7E5E4"/>
+        <rect x="16" y="222" width="5" height="120" rx="2" fill="#92400E"/>
+        <text class="st-cardh" x="34" y="248">Atrial fibrillation</text>
+        <text class="st-sub" x="34" y="270">Explains the anticoagulant.</text>
+        <text class="st-sub" x="34" y="286">Documented since 2021.</text>
+        <text class="st-cardref" x="34" y="324">COND-007A</text>
+        <rect x="16" y="356" width="244" height="120" rx="8" fill="#FFFFFF" stroke="#E7E5E4"/>
+        <rect x="16" y="356" width="5" height="120" rx="2" fill="#1D4ED8"/>
+        <text class="st-cardh" x="34" y="382">Verify with patient</text>
+        <text class="st-sub" x="34" y="404">Transcript says Warfarin was</text>
+        <text class="st-sub" x="34" y="420">stopped. Record disagrees.</text>
+        <text class="st-cardref" x="34" y="458">CONV-007</text>
+      </g>
+    </symbol>
+
+    <symbol id="still-evidence" viewBox="0 0 276 616">
+      <rect width="276" height="616" fill="#FCFCFB"/>
+      <rect width="276" height="64" fill="#115E59"/>
+      <text class="st-brand" x="16" y="30">LOUPE<tspan fill="#99F6E4">IN</tspan></text>
+      <text class="st-bannersub" x="16" y="50">Evidence, card 3</text>
+      <rect x="16" y="88" width="244" height="80" rx="8" fill="#FFFFFF" stroke="#E7E5E4"/>
+      <rect x="16" y="88" width="5" height="80" rx="2" fill="#1D4ED8"/>
+      <text class="st-cardh" x="34" y="114">Verify with patient</text>
+      <text class="st-sub" x="34" y="136">Medication status conflict</text>
+      <rect x="16" y="192" width="244" height="130" rx="8" fill="#F5F5F4"/>
+      <text class="st-quote" x="32" y="222">"I stopped taking the</text>
+      <text class="st-quote" x="32" y="242">blood thinner a while</text>
+      <text class="st-quote" x="32" y="262">back."</text>
+      <text class="st-cardref" x="32" y="300">CONV-007, visit transcript, 2026</text>
+      <rect x="16" y="346" width="244" height="56" rx="8" fill="#FFFFFF" stroke="#E7E5E4"/>
+      <text class="st-sub" x="32" y="370">Contradicts MED-018,</text>
+      <text class="st-sub" x="32" y="388">Warfarin listed active, 2026.</text>
+    </symbol>
+
+    <symbol id="still-chat" viewBox="0 0 276 616">
+      <rect width="276" height="616" fill="#FCFCFB"/>
+      <rect width="276" height="64" fill="#115E59"/>
+      <text class="st-brand" x="16" y="30">LOUPE<tspan fill="#99F6E4">IN</tspan></text>
+      <text class="st-bannersub" x="16" y="50">Case chat</text>
+      <rect x="60" y="88" width="200" height="46" rx="14" fill="#115E59"/>
+      <text class="st-bubbler" x="76" y="116">Why is the transcript flagged?</text>
+      <rect x="16" y="150" width="216" height="84" rx="14" fill="#F5F5F4"/>
+      <text class="st-bubble" x="32" y="176">The patient reported stopping</text>
+      <text class="st-bubble" x="32" y="194">Warfarin, but MED-018 is still</text>
+      <text class="st-bubble" x="32" y="212">active. Confirm before you cut.</text>
+      <rect x="60" y="250" width="200" height="46" rx="14" fill="#115E59"/>
+      <text class="st-bubbler" x="76" y="278">Show me the source rows.</text>
+      <rect x="16" y="312" width="216" height="66" rx="14" fill="#F5F5F4"/>
+      <text class="st-bubble" x="32" y="338">CONV-007, 2026 transcript.</text>
+      <text class="st-bubble" x="32" y="356">MED-018, medication record.</text>
+      <rect x="16" y="540" width="244" height="44" rx="22" fill="#FFFFFF" stroke="#D6D3D1"/>
+      <text class="st-sub" x="34" y="567">Ask the case anything</text>
+    </symbol>
+
+    <symbol id="still-voice" viewBox="0 0 276 616">
+      <rect width="276" height="616" fill="#FCFCFB"/>
+      <rect width="276" height="64" fill="#115E59"/>
+      <text class="st-brand" x="16" y="30">LOUPE<tspan fill="#99F6E4">IN</tspan></text>
+      <text class="st-bannersub" x="16" y="50">Voice</text>
+      <circle cx="138" cy="250" r="44" fill="#115E59"/>
+      <rect x="130" y="228" width="16" height="28" rx="8" fill="#FCFCFB"/>
+      <path d="M122 252 a16 16 0 0 0 32 0" fill="none" stroke="#FCFCFB" stroke-width="3"/>
+      <line x1="138" y1="268" x2="138" y2="278" stroke="#FCFCFB" stroke-width="3"/>
+      <g fill="#0F766E">
+        <rect x="58"  y="370" width="6" height="18" rx="3"/>
+        <rect x="74"  y="358" width="6" height="42" rx="3"/>
+        <rect x="90"  y="366" width="6" height="26" rx="3"/>
+        <rect x="106" y="348" width="6" height="62" rx="3"/>
+        <rect x="122" y="362" width="6" height="34" rx="3"/>
+        <rect x="138" y="342" width="6" height="74" rx="3"/>
+        <rect x="154" y="360" width="6" height="38" rx="3"/>
+        <rect x="170" y="352" width="6" height="54" rx="3"/>
+        <rect x="186" y="364" width="6" height="30" rx="3"/>
+        <rect x="202" y="356" width="6" height="46" rx="3"/>
+      </g>
+      <text class="st-sub" x="138" y="450" text-anchor="middle">Hands-free in the operatory</text>
+    </symbol>
+  </defs>
+</svg>
+
+<p class="notice">SYNTHETIC DATA — PROTOTYPE <span class="notice-sub">every record on this page is invented</span></p>
+
+<header class="topbar">
+  <p class="wordmark">LOUPE<span class="wm-in">IN</span></p>
+</header>
+
+<main>
+  <!-- 1 · HERO -->
+  <section class="hero" aria-labelledby="hero-h">
+    <div class="hero-copy">
+      <h1 id="hero-h">Before you begin, let the record challenge the plan.</h1>
+      <p class="hero-sub">An autonomous agent that reads the patient's own chart before a procedure, and speaks only with evidence.</p>
+      <p class="principle">Investigate broadly. Challenge aggressively. Surface narrowly.</p>
+    </div>
+    <div class="hero-demo">
+      <div class="device" data-video-slot>
+        <svg class="device-svg" viewBox="0 0 320 660" role="img" aria-label="Drawn still of the LOUPEIN app reviewing case DEMO-007">
+          <g filter="url(#frame-shadow)">
+            <rect x="10" y="10" width="300" height="640" rx="36" fill="#292524"/>
+          </g>
+          <rect x="22" y="22" width="276" height="616" rx="22" fill="#FCFCFB"/>
+          <clipPath id="screen-clip"><rect x="22" y="22" width="276" height="616" rx="22"/></clipPath>
+          <g clip-path="url(#screen-clip)">
+            <use id="still-use" href="#still-poster" x="22" y="22" width="276" height="616"/>
+          </g>
+          <rect x="140" y="632" width="40" height="5" rx="2.5" fill="#57534E"/>
+        </svg>
+        <button class="play" type="button" disabled aria-disabled="true" aria-label="Play demo recording, not yet available">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <p class="play-note">recording lands here — chapters preview the stages</p>
+      <div class="chapters" role="group" aria-label="Preview a stage of the demo">
+        <button class="chapter" type="button" data-still="still-trace" aria-pressed="false" disabled>Live trace</button>
+        <button class="chapter" type="button" data-still="still-cards" aria-pressed="false" disabled>Cards</button>
+        <button class="chapter" type="button" data-still="still-evidence" aria-pressed="false" disabled>Evidence</button>
+        <button class="chapter" type="button" data-still="still-chat" aria-pressed="false" disabled>Case chat</button>
+        <button class="chapter" type="button" data-still="still-voice" aria-pressed="false" disabled>Voice</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · THE PROBLEM: record wall at rest -->
+  <section class="reveal" aria-labelledby="problem-h">
+    <h2 id="problem-h">What the chart already holds</h2>
+    <p class="prose">Warfarin sits on the medication list, active as of 2026. A visit transcript from the same year says the patient stopped taking it. Before an extraction, someone has to notice.</p>
+    <figure class="wall-figure">
+      <div class="scrollwrap">
+        <svg class="wall" viewBox="0 0 1056 430" role="img" aria-label="Timeline of patient DEMO-007's chart, 2019 to 2026: ten record cards including active Warfarin, atrial fibrillation, a penicillin allergy, tooth 30 dental work, and a 2026 visit transcript.">
+          <use href="#record-wall"/>
+        </svg>
+      </div>
+      <figcaption>The chart at rest. The dentist would have to go looking.</figcaption>
+    </figure>
+  </section>
+
+  <!-- 3 · THE INVESTIGATION: staged overlays -->
+  <section class="reveal" aria-labelledby="invest-h">
+    <h2 id="invest-h">One agent walks the whole record</h2>
+    <p class="prose">The dentist states intent. The Guardian picks its own tools and sweeps the chart. The Skeptic challenges every candidate. The Composer keeps only what survives.</p>
+    <div class="chips" role="group" aria-label="Pipeline stages">
+      <button class="chip" type="button" data-stage="intent" aria-pressed="false" disabled>Intent</button>
+      <button class="chip" type="button" data-stage="investigate" aria-pressed="false" disabled>Investigate</button>
+      <button class="chip" type="button" data-stage="challenge" aria-pressed="false" disabled>Challenge</button>
+      <button class="chip" type="button" data-stage="surface" aria-pressed="true" disabled>Surface</button>
+    </div>
+    <figure class="wall-figure" id="stage-figure" data-stage="surface">
+      <div class="scrollwrap">
+        <svg class="wall" viewBox="0 0 1056 430" role="img" aria-label="The same chart timeline with the Guardian's numbered investigation path, the contradiction between Warfarin and the visit transcript, and the three surviving cards.">
+          <use href="#record-wall"/>
+
+          <!-- lens: intent -->
+          <g class="ov ov-intent">
+            <rect x="48" y="48" width="240" height="30" rx="15" fill="#115E59"/>
+            <text class="wt-chiptext" x="60" y="68">Intent: Extraction, tooth #30</text>
+          </g>
+
+          <!-- lens: investigation path -->
+          <g class="ov ov-invest">
+            <polyline points="296,63 330,36 911,86 399,146 271,116 527,196 783,96 911,201 911,266 1035,134"
+              fill="none" stroke="#0F766E" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.55"/>
+            <text class="wt-hoplabel" x="346" y="40">summary</text>
+            <g>
+              <g><circle cx="296" cy="63"  r="10" fill="#115E59" stroke="#FFFFFF" stroke-width="1.5"/><text class="wt-hop" x="296" y="67"  text-anchor="middle">1</text></g>
+              <g><circle cx="330" cy="36"  r="10" fill="#115E59" stroke="#FFFFFF" stroke-width="1.5"/><text class="wt-hop" x="330" y="40"  text-anchor="middle">2</text></g>
+              <g><circle cx="911" cy="86"  r="10" fill="#115E59" stroke="#FFFFFF" stroke-width="1.5"/><text class="wt-hop" x="911" y="90"  text-anchor="middle">3</text></g>
+              <g><circle cx="399" cy="146" r="10" fill="#115E59" stroke="#FFFFFF" stroke-width="1.5"/><text class="wt-hop" x="399" y="150" text-anchor="middle">4</text></g>
+              <g><circle cx="271" cy="116" r="10" fill="#115E59" stroke="#FFFFFF" stroke-width="1.5"/><text class="wt-hop" x="271" y="120" text-anchor="middle">5</text></g>
+              <g><circle cx="527" cy="196" r="10" fill="#115E59" stroke="#FFFFFF" stroke-width="1.5"/><text class="wt-hop" x="527" y="200" text-anchor="middle">6</text></g>
+              <g><circle cx="783" cy="96"  r="10" fill="#115E59" stroke="#FFFFFF" stroke-width="1.5"/><text class="wt-hop" x="783" y="100" text-anchor="middle">7</text></g>
+              <g><circle cx="911" cy="201" r="10" fill="#115E59" stroke="#FFFFFF" stroke-width="1.5"/><text class="wt-hop" x="911" y="205" text-anchor="middle">8</text></g>
+              <g><circle cx="911" cy="266" r="10" fill="#115E59" stroke="#FFFFFF" stroke-width="1.5"/><text class="wt-hop" x="911" y="270" text-anchor="middle">9</text></g>
+              <g><circle cx="1035" cy="134" r="10" fill="#115E59" stroke="#FFFFFF" stroke-width="1.5"/><text class="wt-hop" x="1035" y="138" text-anchor="middle">10</text></g>
+            </g>
+            <rect x="911" y="86" width="130" height="54" rx="8" fill="none" stroke="#92400E" stroke-width="2.5"/>
+            <rect x="911" y="201" width="130" height="54" rx="8" fill="none" stroke="#92400E" stroke-width="2.5"/>
+            <path d="M 976 143 C 1000 165, 1000 180, 976 202" fill="none" stroke="#92400E" stroke-width="2" stroke-dasharray="5 4"/>
+            <text class="wt-contra" x="958" y="166" text-anchor="end">contradiction:</text>
+            <text class="wt-contra" x="958" y="181" text-anchor="end">"I stopped taking it"</text>
+          </g>
+
+          <!-- lens: challenge dims -->
+          <g class="ov ov-dim" fill="#FAFAF9" opacity="0.82">
+            <rect x="272" y="177" width="131" height="55"/>
+            <rect x="400" y="147" width="131" height="55"/>
+            <rect x="528" y="197" width="131" height="55"/>
+            <rect x="656" y="107" width="131" height="55"/>
+            <rect x="656" y="167" width="131" height="55"/>
+            <rect x="784" y="97"  width="131" height="55"/>
+            <rect x="912" y="267" width="131" height="55"/>
+          </g>
+
+          <!-- lens: verdict tags -->
+          <g class="ov ov-tags">
+            <rect x="911" y="86" width="130" height="54" rx="8" fill="none" stroke="#92400E" stroke-width="2.5"/>
+            <rect x="915" y="64" width="72" height="18" rx="9" fill="#92400E"/>
+            <text class="wt-tag" x="951" y="77" text-anchor="middle">SURFACE</text>
+            <rect x="271" y="116" width="130" height="54" rx="8" fill="none" stroke="#92400E" stroke-width="2.5"/>
+            <rect x="275" y="94" width="72" height="18" rx="9" fill="#92400E"/>
+            <text class="wt-tag" x="311" y="107" text-anchor="middle">SURFACE</text>
+            <rect x="911" y="201" width="130" height="54" rx="8" fill="none" stroke="#1D4ED8" stroke-width="2.5"/>
+            <rect x="915" y="179" width="62" height="18" rx="9" fill="#1D4ED8"/>
+            <text class="wt-tag" x="946" y="192" text-anchor="middle">VERIFY</text>
+          </g>
+
+          <!-- lens: silence caption -->
+          <g class="ov ov-silence">
+            <text class="wt-note" x="48" y="366">The other seven records: silence. That is a result too.</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption class="stage-caption" data-caption>Three cards survive. Everything else stays quiet.</figcaption>
+    </figure>
+
+    <details class="trace">
+      <summary>The persisted trace of this run, verbatim</summary>
+      <ol class="trace-list">
+        <li><span class="actor t-ctx">context</span> Procedure: extraction, tooth #30</li>
+        <li><span class="actor t-g">guardian</span> Reviewed patient summary</li>
+        <li><span class="actor t-g">guardian</span> Reviewed active medication records</li>
+        <li><span class="actor t-g">guardian</span> Reviewed allergy records</li>
+        <li><span class="actor t-g">guardian</span> Reviewed medical conditions</li>
+        <li><span class="actor t-g">guardian</span> Reviewed tooth #30 history</li>
+        <li><span class="actor t-g">guardian</span> Searched clinical notes for 'medication'</li>
+        <li><span class="actor t-g">guardian</span> Searched visit transcripts for 'medication'</li>
+        <li><span class="actor t-g">guardian</span> Reviewed imaging for tooth #30</li>
+        <li><span class="actor t-g">guardian</span> Reviewed medication history for Warfarin</li>
+        <li><span class="actor t-g">guardian</span> Proposed 3 candidate record(s) for challenge</li>
+        <li><span class="actor t-s">skeptic</span> Challenging 3 candidate record(s)</li>
+        <li><span class="actor t-s">skeptic</span> Surface: Active Medication Record - Warfarin</li>
+        <li><span class="actor t-s">skeptic</span> Surface: Medical Condition - Atrial Fibrillation</li>
+        <li><span class="actor t-s">skeptic</span> Verify: Visit Conversation Transcript - Medication Status</li>
+        <li><span class="actor t-c">composer</span> Prepared 3 evidence-backed card(s)</li>
+      </ol>
+      <p class="trace-note">One run of several. Paths differ run to run; that is the point.</p>
+    </details>
+  </section>
+
+  <!-- 4 · THE CHALLENGE: Jev typed judgments -->
+  <section class="reveal challenge-section" aria-labelledby="challenge-h">
+    <h2 id="challenge-h">The Skeptic answers in types</h2>
+    <p class="prose">Every candidate faces TypeSafe's Jev model. Not a paragraph of hedging, a typed judgment: SURFACE, DISMISS, or VERIFY. If nothing survives, the dentist hears nothing. Silence is a valid result.</p>
+    <div class="jev-grid">
+      <div class="jev-panel">
+        <p class="jev-head"><span class="jev-id">MED-018</span> Warfarin, active</p>
+<pre class="code" translate="no"><code>{
+  <span class="k">"same_patient"</span>:    <span class="n">0.99</span>,
+  <span class="k">"relevant"</span>:        <span class="n">0.97</span>,
+  <span class="k">"current"</span>:         <span class="n">0.96</span>,
+  <span class="k">"not_contradicted"</span>:<span class="n">0.91</span>,
+  <span class="k">"decision"</span>:  <span class="d-surface">"SURFACE"</span>
+}</code></pre>
+      </div>
+      <div class="jev-panel">
+        <p class="jev-head"><span class="jev-id">CONV-007</span> Visit transcript</p>
+<pre class="code" translate="no"><code>{
+  <span class="k">"same_patient"</span>:    <span class="n">0.99</span>,
+  <span class="k">"relevant"</span>:        <span class="n">0.97</span>,
+  <span class="k">"current"</span>:         <span class="n">0.94</span>,
+  <span class="k">"not_contradicted"</span>:<span class="u">0.31</span>,
+  <span class="k">"decision"</span>:  <span class="d-verify">"VERIFY"</span>
+}</code></pre>
+        <p class="jev-note">0.31 is the honest catch: the model will not claim certainty it does not have, so the card says verify with the patient.</p>
+      </div>
+    </div>
+    <p class="jev-source">Values from one real TypeSafe call, shown as example.</p>
+  </section>
+
+  <!-- 5 · WHAT THE DENTIST SEES -->
+  <section class="reveal" aria-labelledby="sees-h">
+    <h2 id="sees-h">What the dentist sees</h2>
+    <p class="prose">Five surfaces, all fed by the same run. The chapter buttons under the device frame above preview each one until the recording lands.</p>
+    <dl class="surfaces">
+      <div><dt>Live trace</dt><dd>Every Guardian step, persisted as it happens.</dd></div>
+      <div><dt>Cards</dt><dd>Only evidence-backed cards. Three in this run.</dd></div>
+      <div><dt>Evidence</dt><dd>Each card cites the record rows behind it.</dd></div>
+      <div><dt>Case chat</dt><dd>Ask the case a question; answers cite the chart.</dd></div>
+      <div><dt>Voice</dt><dd>Hands-free in the operatory, gloves on.</dd></div>
+    </dl>
+    <p class="prose small">No diagnosis. No prescriptions. Ever. The agent reads the record and raises its hand; the dentist decides.</p>
+  </section>
+
+  <!-- 6 · HOW IT WORKS -->
+  <section class="reveal" aria-labelledby="stack-h">
+    <h2 id="stack-h">How it works</h2>
+    <ol class="stack">
+      <li>Next.js</li>
+      <li>FastAPI</li>
+      <li>LangGraph</li>
+      <li class="stack-pair"><span>Gemini <em>investigation + vision</em></span><span class="plus">+</span><span>TypeSafe Jev <em>decisions</em></span></li>
+      <li>Supabase Postgres</li>
+    </ol>
+    <ul class="honesty-notes">
+      <li>100% synthetic data, seeded from <code>db/seed.sql</code>.</li>
+      <li>The Guardian chooses its tools dynamically; no scripted path.</li>
+      <li>Every agent event is persisted; the trace above is a real row set.</li>
+    </ul>
+  </section>
+
+  <!-- 7 · CLOSE -->
+  <section class="reveal close" aria-labelledby="close-h">
+    <h2 id="close-h">Built for the Agents track, shaped to sell</h2>
+    <p class="prose">A three-agent loop over real clinical structure, a typed-judgment safety layer, and a workflow a dental office would actually pay for: two minutes of machine skepticism before every procedure.</p>
+    <div class="links">
+      <a class="link-btn link-soon" href="#" aria-disabled="true">Live app <span>coming soon</span></a>
+      <a class="link-btn link-primary" href="https://github.com/agenticLoupes/agenticloop">Repository</a>
+      <a class="link-btn link-soon" href="#" aria-disabled="true">Demo video <span>coming soon</span></a>
+    </div>
+  </section>
+</main>
+
+<footer aria-labelledby="ledger-h">
+  <h2 id="ledger-h">Honesty ledger</h2>
+  <div class="scrollwrap">
+    <table class="ledger">
+      <thead><tr><th>Visual</th><th>Source</th><th>Limit</th></tr></thead>
+      <tbody>
+        <tr><td>Screen recording</td><td>The real app (LOUPEIN repo, <code>main</code>), a live DEMO-007 run</td><td>Synthetic data throughout; the run shown is one real, unscripted agent run</td></tr>
+        <tr><td>Record wall drawing</td><td>Hand-drawn SVG; record ids and values from <code>db/seed.sql</code></td><td>A drawing, not a screenshot; simplifies field detail</td></tr>
+        <tr><td>Trace steps in copy</td><td>An actual persisted <code>agent_event</code> trace</td><td>One run of several; paths differ run to run (that is the point)</td></tr>
+        <tr><td>Jev panel values</td><td>A real TypeSafe response (Noul 0.97, Choice SURFACE)</td><td>One call's values, shown as example</td></tr>
+        <tr><td>Architecture strip</td><td>The repo's actual stack</td><td>No deployment claims beyond what is linked</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="footer-line">LOUPEIN is a hackathon prototype. Synthetic data only. Not a medical device.</p>
+</footer>
+
+<script src="story.js"></script>
+</body>
+</html>
