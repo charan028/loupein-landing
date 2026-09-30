@@ -2,6 +2,8 @@
    Palette: stone base, teal accent, amber = review, blue = verify, violet = uncertain.
    One light, upper-left. System font stack (no runtime font fetch, per DESIGN.md). */
 
+html { scroll-padding-top: 2.6rem; }
+
 :root {
   --stone-50:  #FAFAF9;
   --stone-100: #F5F5F4;
@@ -52,7 +54,7 @@ summary:focus-visible {
   background: var(--stone-900);
   color: #FCD34D;
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-align: center;
   padding: 0.45rem 1rem;
@@ -117,8 +119,10 @@ h2 { font-size: clamp(1.5rem, 3.2vw, 2.1rem); margin-bottom: 0.9rem; }
   font-family: var(--mono);
   font-size: 0.85rem;
   color: var(--teal);
-  border-left: 3px solid var(--teal-soft);
-  padding-left: 0.8rem;
+  background: rgba(15, 118, 110, 0.07);
+  border-radius: 6px;
+  padding: 0.55rem 0.8rem;
+  display: inline-block;
 }
 
 .hero-demo { justify-self: center; text-align: center; }
@@ -337,8 +341,8 @@ figcaption, .stage-caption {
 /* token contrast vs #1C1917: all >= 5.5:1 */
 .code {
   font-family: var(--mono);
-  font-size: 11px;
-  line-height: 1.75;
+  font-size: 12px;
+  line-height: 1.7;
   color: #D6D3D1;             /* punctuation, braces */
   overflow-x: auto;
 }
