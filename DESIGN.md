@@ -55,6 +55,12 @@ that repo has no license, so **no source was copied**):
 
 ## Honesty ledger
 
+Dev-facing provenance only — this table does not appear on the public page. A
+pitch page sells; a disclosure table reads as a confession. The one line that
+belongs in front of judges stays in the page footer: *"LOUPEIN is a hackathon
+prototype. Synthetic data only. Not a medical device."* Everything below is
+for the next person editing this site, and for the repo README/DESIGN docs.
+
 | Visual | Source | Limit |
 | --- | --- | --- |
 | Hero demo animation | Hand-drawn SVG player; stages and trace lines mirror a real persisted DEMO-007 run | A drawn re-enactment, not a screen recording; timings are authored |
