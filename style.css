@@ -1,6 +1,23 @@
 /* LOUPEIN presentation site
    Palette: stone base, teal accent, amber = review, blue = verify, violet = uncertain.
-   One light, upper-left. System font stack (no runtime font fetch, per DESIGN.md). */
+   One light, upper-left. Self-hosted OFL fonts (Familjen Grotesk for display,
+   Instrument Sans for body), system stack as fallback — no runtime requests
+   beyond the page's own assets. */
+
+@font-face {
+  font-family: "Familjen Grotesk";
+  src: url("assets/fonts/familjen-grotesk-latin.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Instrument Sans";
+  src: url("assets/fonts/instrument-sans-latin.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
 
 html { scroll-padding-top: 2.6rem; }
 
@@ -18,7 +35,8 @@ html { scroll-padding-top: 2.6rem; }
   --amber:     #92400E;
   --blue:      #1D4ED8;
   --violet:    #6D28D9;
-  --sans: "Avenir Next", "Helvetica Neue", -apple-system, "Segoe UI", system-ui, Arial, sans-serif;
+  --sans: "Instrument Sans", "Avenir Next", "Helvetica Neue", -apple-system, "Segoe UI", system-ui, Arial, sans-serif;
+  --display: "Familjen Grotesk", "Avenir Next", "Helvetica Neue", -apple-system, "Segoe UI", system-ui, Arial, sans-serif;
   --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --move: 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -77,6 +95,7 @@ footer {
 .topbar { padding-top: 1.6rem; }
 
 .wordmark {
+  font-family: var(--display);
   font-size: 1.35rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -86,7 +105,7 @@ footer {
 
 main > section { padding-block: clamp(3rem, 8vw, 5.5rem); }
 
-h1, h2 { letter-spacing: -0.02em; line-height: 1.15; color: var(--stone-900); }
+h1, h2 { font-family: var(--display); letter-spacing: -0.02em; line-height: 1.15; color: var(--stone-900); }
 
 h2 { font-size: clamp(1.5rem, 3.2vw, 2.1rem); margin-bottom: 0.9rem; }
 
@@ -139,16 +158,26 @@ h2 { font-size: clamp(1.5rem, 3.2vw, 2.1rem); margin-bottom: 0.9rem; }
   height: 64px;
   border-radius: 50%;
   border: 1px solid var(--stone-300);
-  background: rgba(250, 250, 249, 0.92);
-  color: var(--stone-600);
-  cursor: not-allowed;
+  background: rgba(250, 250, 249, 0.94);
+  color: var(--stone-700);
+  cursor: pointer;
+  transition: opacity var(--move), border-color var(--move), color var(--move);
 }
 .play svg { width: 28px; height: 28px; }
+.play:disabled { color: var(--stone-600); cursor: not-allowed; }
+.play:not(:disabled):hover,
+.play:focus-visible { border-color: var(--teal-soft); color: var(--teal); opacity: 1; }
+.play .ic-pause { display: none; }
+.play[data-control="pause"] .ic-play { display: none; }
+.play[data-control="pause"] .ic-pause { display: block; }
+/* While the demo plays, the control steps back but stays reachable. */
+.play[data-control="pause"] { opacity: 0.35; }
 
 .play-note {
   margin-top: 0.9rem;
   font-size: 0.8rem;
   color: var(--stone-600);
+  min-height: 2.4em;
 }
 
 .chapters {
@@ -160,6 +189,8 @@ h2 { font-size: clamp(1.5rem, 3.2vw, 2.1rem); margin-bottom: 0.9rem; }
 }
 
 .chapter {
+  position: relative;
+  overflow: hidden;
   font: 600 0.8rem var(--sans);
   color: var(--stone-700);
   background: #FFFFFF;
@@ -177,6 +208,40 @@ h2 { font-size: clamp(1.5rem, 3.2vw, 2.1rem); margin-bottom: 0.9rem; }
   color: #FFFFFF;
 }
 .chapter:disabled { color: var(--stone-600); cursor: default; }
+
+/* Stage progress: the shared clock of the demo timeline (demo.js animates scaleX). */
+.ch-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--teal-soft);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+.chapter[aria-pressed="true"] .ch-bar { background: #99F6E4; }
+
+/* ---------- hero demo screens (drawn, animated by demo.js) ---------- */
+/* Without JS only the final Surface still shows; WAAPI overrides these. */
+.scr { opacity: 0; }
+.scr[data-default] { opacity: 1; }
+.fingertip { opacity: 0; }
+/* A still shows where a stage ends up; no tap is in progress then. */
+[data-demo][data-still="true"] .fingertip { opacity: 0 !important; }
+
+/* Scale animations on drawn controls pivot on their own box, not the viewport. */
+.press, .pop, .tag, [data-hops] > * { transform-box: fill-box; transform-origin: center; }
+
+.st-section { font: 700 9px var(--mono); letter-spacing: 0.08em; fill: var(--stone-600); }
+.st-h2      { font: 700 15px var(--display); fill: var(--stone-900); }
+.st-chip    { font: 600 10.5px var(--sans); fill: var(--stone-700); }
+.st-chip-on { font: 600 10.5px var(--sans); fill: #FFFFFF; }
+.st-tooth   { font: 700 10px var(--sans); fill: var(--teal); }
+.tr-agent   { font: 700 9px var(--mono); letter-spacing: 0.05em; fill: #5EEAD4; }
+.tr-msg     { font: 9.5px var(--mono); fill: #D6D3D1; }
+.vd-msg     { font: 600 11px var(--sans); fill: #E7E5E4; }
 
 /* ---------- record wall figures ---------- */
 .wall-figure { margin-top: 2rem; }
@@ -209,20 +274,14 @@ figcaption, .stage-caption {
 .wt-contra { font: 600 10.5px var(--sans); fill: var(--amber); }
 .wt-note   { font: 12px var(--sans); fill: var(--stone-600); }
 
-/* SVG text styles: device stills */
-.st-brand     { font: 700 13px var(--sans); letter-spacing: 0.12em; fill: #FFFFFF; }
+/* SVG text styles: drawn phone screens */
+.st-brand     { font: 700 13px var(--display); letter-spacing: 0.12em; fill: #FFFFFF; }
 .st-bannersub { font: 10px var(--sans); fill: #CCFBF1; }
-.st-name      { font: 600 12px var(--sans); fill: var(--stone-800); }
 .st-sub       { font: 10px var(--sans); fill: var(--stone-600); }
 .st-row       { font: 600 11px var(--sans); fill: var(--stone-800); }
-.st-rowv      { font: 10px var(--sans); fill: var(--stone-600); }
 .st-btn       { font: 600 13px var(--sans); fill: #FFFFFF; }
-.st-trace text { font: 9px var(--mono); fill: var(--stone-700); }
 .st-cardh     { font: 600 12px var(--sans); fill: var(--stone-800); }
 .st-cardref   { font: 9px var(--mono); letter-spacing: 0.05em; fill: var(--stone-600); }
-.st-quote     { font: italic 11px var(--sans); fill: var(--stone-700); }
-.st-bubble    { font: 10px var(--sans); fill: var(--stone-700); }
-.st-bubbler   { font: 10px var(--sans); fill: #FFFFFF; }
 
 /* ---------- 3 · stage chips + overlays ---------- */
 .chips {
@@ -518,11 +577,13 @@ html.js .reveal {
 }
 html.js .reveal.seen { opacity: 1; transform: none; }
 
-/* ---------- reduced motion: final states, instantly ---------- */
+/* ---------- reduced motion: final states, instantly ----------
+   demo.js and story.js also check this query: no timeline playback, no wall
+   draw-ins — stage buttons and chips jump straight to final stills. */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   html.js .reveal { opacity: 1; transform: none; transition: none; }
-  .ov, .chip, .chapter, .link-btn { transition: none !important; }
+  .ov, .chip, .chapter, .link-btn, .play, .ch-bar { transition: none !important; }
 }
 
 /* ---------- mobile ---------- */
