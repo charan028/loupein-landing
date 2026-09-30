@@ -1,0 +1,41 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "instrument sans",
+        "createdAt": "2026-09-30T15:20:51.539Z",
+        "reason": "intentional pairing with Familjen Grotesk, matching the reference project (SamGu-NRX/house-scanning-landing) we studied for the animation technique; documented in DESIGN.md honesty ledger"
+      },
+      {
+        "rule": "overused-font",
+        "value": "instrument sans",
+        "files": [
+          "style.css"
+        ],
+        "createdAt": "2026-09-30T15:20:51.558Z",
+        "reason": "same as above, lowercase variant"
+      },
+      {
+        "rule": "tiny-text",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-09-30T15:20:51.578Z",
+        "reason": "hits are inline SVG artwork (drawn phone-screen mockup, record-wall illustration) at illustration scale, not page body text"
+      },
+      {
+        "rule": "wide-tracking",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-09-30T15:20:51.596Z",
+        "reason": "hits are inline SVG label classes (.wt-*, .st-*, .tr-agent) inside drawn UI artwork, all short uppercase labels"
+      }
+    ]
+  }
+}
